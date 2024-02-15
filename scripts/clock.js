@@ -86,6 +86,8 @@ function LEDclock(context) {
     this.radius = 22;
     this.grid = 60;
     this.led_on = 'rgb(200,0,0)';
+    this.led_m = 'rgb(0,200,0)';
+    this.led_h = 'rgb(50,50,255)';
     this.led_off = 'rgb(40,0,0)';
     this.background = 'rgb(0,0,0)';
     this.time = new Date();
@@ -156,9 +158,38 @@ function LEDclock(context) {
         ctx.restore();
     }
 
+    // There is almost certainly a better way to do this than these two additional functions, but I'm too lazy to spend time working it out right now
+    function draw_radial_ledsM(distance, angle, data) {
+        var i;
+        ctx.save();
+        for (i in data) {
+            ctx.beginPath();
+            ctx.fillStyle = (data[i]? that.led_m: that.led_off);
+            ctx.arc(0, -distance, that.radius, 0, 2*Math.PI);
+            if(i == that.time.getMinutes()) { ctx.fill(); }
+            ctx.rotate(angle);
+        }
+        ctx.restore();
+    }
+    function draw_radial_ledsH(distance, angle, data) {
+        var i;
+        ctx.save();
+        for (i in data) {
+            ctx.beginPath();
+            ctx.fillStyle = (data[i]? that.led_h: that.led_off);
+            ctx.arc(0, -distance, that.radius, 0, 2*Math.PI);
+            if(i == that.time.getHours()) { ctx.fill(); }
+            ctx.rotate(angle);
+        }
+        ctx.restore();
+    }
+
 
     function draw_led_scale() {
         // Draws circular scale with LEDs.
+        var pointsHM = [F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F];
+        draw_radial_leds(13.8*that.grid, Math.PI/30, pointsHM);
+
         var points = [T, T, T, T, T, T, T, T, T, T, T, T];
         draw_radial_leds(13.8*that.grid, Math.PI/6, points);
 
@@ -167,6 +198,19 @@ function LEDclock(context) {
             ledcircle[i] = ((i <= that.time.getSeconds())? T: F);
         }
         draw_radial_leds(15*that.grid, Math.PI/30, ledcircle);
+      
+        // These two bits also are almost certainly not the best ways to do this. I've got music to make now so I may come back in due course and fix my damned inefficiency later
+        var ledcircleH = [];
+        for (var j=0; j<12; j++) {
+            ledcircleH[j] = ((j <= that.time.getHours())? T: F);
+        }
+        draw_radial_ledsH(13.8*that.grid, Math.PI/6, ledcircleH);
+      
+        var ledcircleM = [];
+        for (var k=0; k<60; k++) {
+            ledcircleM[k] = ((k == that.time.getMinutes())? T: F);
+        }
+        draw_radial_ledsM(13.8*that.grid, Math.PI/30, ledcircleM);      
     }
 
     this.draw = function () {
