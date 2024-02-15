@@ -178,7 +178,7 @@ function LEDclock(context) {
             ctx.beginPath();
             ctx.fillStyle = (data[i]? that.led_h: that.led_off);
             ctx.arc(0, -distance, that.radius, 0, 2*Math.PI);
-            if(i == that.time.getHours()) { ctx.fill(); }
+            if(i == that.time.getHours() || i == 0) { ctx.fill(); }
             ctx.rotate(angle);
         }
         ctx.restore();
