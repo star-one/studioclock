@@ -4,4 +4,4 @@ A fork of `Ondřej Caletka <https://github.com/oskar456>`'s clone of the studio 
 
 The feature to have chimes doesn't seem to be working on my computer in this version, but it didn't seem to be working in Ondřej's version either.
 
-`Online here <https://perfect-curve.co.uk/clock/>`
+`Online at <https://perfect-curve.co.uk/clock/>`
