@@ -1,10 +1,8 @@
-/* for customizations, consider using ``local.css`` */
-
 :root {
   --foreground-color: #ff0000;
   --background-color: #000000;
   --led-on-color: var(--foreground-color);
-  --led-off-color: #260000;
+  --led-off-color: #310000;
 }
 
 html, body {
