@@ -178,7 +178,7 @@ function LEDclock(context) {
             ctx.beginPath();
             ctx.fillStyle = (data[i]? that.led_h: that.led_off);
             ctx.arc(0, -distance, that.radius, 0, 2*Math.PI);
-            if(i == that.time.getHours() || i == 0) { ctx.fill(); }
+            if(i == that.time.getHours()) { ctx.fill(); }
             ctx.rotate(angle);
         }
         ctx.restore();
@@ -201,7 +201,7 @@ function LEDclock(context) {
       
         // These two bits also are almost certainly not the best ways to do this. I've got music to make now so I may come back in due course and fix my damned inefficiency later
         var ledcircleH = [];
-        for (var j=0; j<12; j++) {
+        for (var j=0; j<24; j++) {
             ledcircleH[j] = ((j <= that.time.getHours())? T: F);
         }
         draw_radial_ledsH(13.8*that.grid, Math.PI/6, ledcircleH);
