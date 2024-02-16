@@ -1,3 +1,44 @@
+function getAPI(apiURL){
+    var Httpreq = new XMLHttpRequest();
+    Httpreq.open("GET",apiURL,false);
+    Httpreq.send(null);
+    return Httpreq.responseText;          
+}
+
+// Get the location
+function getLocationFromIP() {
+  apiURL = "https://ipapi.co/json/";
+  var json_obj = JSON.parse(getAPI(apiURL));
+  thisLat = json_obj.latitude;
+  thisLong = json_obj.longitude;
+}
+thisLat = 0;
+thisLong = 0;
+window.onload = getLocationFromIP()
+
+// Get the weather from an external API
+currentTemp = 0;
+function getWeather() {
+apiURL = "https://api.open-meteo.com/v1/forecast?latitude=" + thisLat + "&longitude=" + thisLong + "&current=temperature_2m,precipitation&daily=sunrise,sunset,precipitation_hours,sunshine_duration&timezone=auto&forecast_days=2";
+var json_obj = JSON.parse(getAPI(apiURL));
+
+currentTemp = (json_obj.current.temperature_2m).toFixed(0);
+currentPrecipitation = (json_obj.current.precipitation).toFixed(0);
+precipitationHours = json_obj.daily.precipitation_hours[0];
+sunriseTimeToday = new Date(json_obj.daily.sunrise[0]);
+sunsetTimeToday = new Date(json_obj.daily.sunset[0]);
+sunriseTimeTomorrow = new Date(json_obj.daily.sunrise[1]);
+sunshineDurationToday = ((json_obj.daily.sunshine_duration[0]/60)/60).toFixed(0);
+sunshineDurationTomorrow = ((json_obj.daily.sunshine_duration[1]/60)/60).toFixed(0);
+timeNow = new Date();
+sunTime = sunriseTimeToday;
+sunshineTime = sunshineDurationToday;
+if(timeNow > sunTime) { sunTime = sunsetTimeToday; }
+if(timeNow > sunTime) { sunTime = sunriseTimeTomorrow; sunshineTime = sunshineDurationTomorrow; }
+console.log(sunTime);
+console.log(sunshineDurationTomorrow);
+}
+
 function LEDclock(context) {
     var T = true, F = false;
     var ctx = context;
@@ -110,13 +151,13 @@ function LEDclock(context) {
         //draw big digits
         ctx.save();
         ctx.translate(-10*that.grid, 0);
-        draw_matrix(0^(that.time.getHours()/10));
+        if(that.time.getSeconds() > 9 && that.time.getSeconds() < 15) { draw_matrix(0^(currentPrecipitation/10)); } else if(that.time.getSeconds() > 39 && that.time.getSeconds() < 45) { draw_matrix(0^(sunTime.getHours()/10)); } else { draw_matrix(0^(that.time.getHours()/10)); }
         ctx.translate(6*that.grid, 0);
-        draw_matrix(that.time.getHours()%10);
+        if(that.time.getSeconds() > 9 && that.time.getSeconds() < 15) { draw_matrix(currentPrecipitation%10); } else if(that.time.getSeconds() > 39 && that.time.getSeconds() < 45) { draw_matrix(sunTime.getHours()%10); } else { draw_matrix(that.time.getHours()%10); }
         ctx.translate(8*that.grid, 0);
-        draw_matrix(0^(that.time.getMinutes()/10));
-        ctx.translate(6*that.grid, 0);
-        draw_matrix(that.time.getMinutes()%10);
+        if(that.time.getSeconds() > 9 && that.time.getSeconds() < 15) { draw_matrix(0^(precipitationHours/10)); } else if(that.time.getSeconds() > 39 && that.time.getSeconds() < 45) { draw_matrix(0^(sunTime.getMinutes()/10)); } else { draw_matrix(0^(that.time.getMinutes()/10)); }
+        ctx.translate(6*that.grid, 0); 
+        if(that.time.getSeconds() > 9 && that.time.getSeconds() < 15) { draw_matrix(precipitationHours%10); } else if(that.time.getSeconds() > 39 && that.time.getSeconds() < 45) { draw_matrix(sunTime.getMinutes()%10); } else { draw_matrix(that.time.getMinutes()%10); }
         ctx.restore();
 
         //draw small digits
@@ -124,9 +165,9 @@ function LEDclock(context) {
         ctx.translate(0, 8*that.grid);
         ctx.scale(0.7, 0.7);
         ctx.translate(-3*that.grid, 0);
-        draw_matrix(0^(that.time.getSeconds()/10));
+        if(that.time.getSeconds() > 9 && that.time.getSeconds() < 15) { draw_matrix(0^(currentTemp/10)); } else if(that.time.getSeconds() > 39 && that.time.getSeconds() < 45) { draw_matrix(0^(sunshineTime/10)); } else { draw_matrix(0^(that.time.getSeconds()/10)); }
         ctx.translate(6*that.grid, 0);
-        draw_matrix(that.time.getSeconds()%10);
+        if(that.time.getSeconds() > 9 && that.time.getSeconds() < 15) { draw_matrix(currentTemp%10); } else if(that.time.getSeconds() > 39 && that.time.getSeconds() < 45) { draw_matrix(sunshineTime%10); } else { draw_matrix(that.time.getSeconds()%10); }
         ctx.restore();
 
         //draw central colon
@@ -186,6 +227,9 @@ function LEDclock(context) {
 
 
     function draw_led_scale() {
+        if(!thisLat) { thisLat = 52.4; thisLong = -1.9; }
+        // We only want to poll for the weather every half an hour so as not to spam the API
+        if(((that.time.getMinutes() == 0 || that.time.getMinutes() == 30) && that.time.getSeconds() == 0) || !currentTemp) { getWeather(); }
         // Draws circular scale with LEDs.
         var pointsHM = [F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F];
         draw_radial_leds(13.8*that.grid, Math.PI/30, pointsHM);
@@ -231,5 +275,4 @@ function LEDclock(context) {
         draw_clock_digits();
         ctx.restore();
     };
-
 }
