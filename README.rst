@@ -10,4 +10,4 @@ The feature to have chimes doesn't seem to be working on my computer in this ver
 
 `Online at <https://perfect-curve.co.uk/clock/>`
 
-'Buy the real thing from <https://www.wharton.co.uk/products/4900050-radio-tv-studio-digital-clocks/>'
+`Buy the real thing from <https://www.wharton.co.uk/products/4900050-radio-tv-studio-digital-clocks/>`
