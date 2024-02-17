@@ -1,4 +1,8 @@
-/* for customizations, consider using ``local.js`` */
+// OnLoad pop up a small square resizeable window with just the clock. Assuming the user accepts the popup
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+if(!urlParams.get('popup')) { let params = `scrollbars=no,resizable=yes,status=no,location=no,toolbar=no,menubar=no,
+width=500,height=500,left=100,top=100`; window.open("https://perfect-curve.co.uk/clock/?popup=yes", "studioclock", params); }
 
 'use strict';
 var offset = 0;
